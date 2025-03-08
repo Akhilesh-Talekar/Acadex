@@ -1,57 +1,47 @@
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
-import { role, teachersData } from "@/lib/data";
+import { eventsData,role} from "@/lib/data";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
-type Teacher = {
+type Event = {
   id: number;
-  teacherId: string;
-  name: string;
-  email?: string;
-  photo: string;
-  phone: string;
-  subjects: string[];
-  classes: string[];
-  address: string;
+  title: string;
+  class: string;
+  date: string;
+  startTime: string;
+  endTime: string;
 };
 
 const columns = [
   {
-    header: "Info",
-    accessor: "info",
+    header: "Title",
+    accessor: "title",
   },
 
   {
-    header: "Teacher ID",
-    accessor: "teacherId",
+    header: "Class",
+    accessor: "class",
+  },
+
+  {
+    header: "Date",
+    accessor: "date",
     className: "hidden md:table-cell",
   },
 
   {
-    header: "Subjects",
-    accessor: "subjects",
+    header: "Start Time",
+    accessor: "starttime",
     className: "hidden md:table-cell",
   },
 
   {
-    header: "Classes",
-    accessor: "classes",
+    header: "End Time",
+    accessor: "endtime",
     className: "hidden md:table-cell",
-  },
-
-  {
-    header: "Phone",
-    accessor: "phone",
-    className: "hidden lg:table-cell",
-  },
-
-  {
-    header: "Address",
-    accessor: "address",
-    className: "hidden lg:table-cell",
   },
 
   {
@@ -60,36 +50,25 @@ const columns = [
   },
 ];
 
-const TeacherList = () => {
-  const renderRow = (item: Teacher) => (
+const EventList = () => {
+  const renderRow = (item: Event) => (
     <tr
       key={item.id}
       className="border-b border-gray-200 hover:bg-lamaPurpleLight even:bg-slate-50 text-sm"
     >
       <td>
         <div className="flex items-center justify-start gap-4 my-2">
-          <Image
-            src={item.photo}
-            alt="teacher"
-            width={40}
-            height={40}
-            className="md:hidden xl:block w-10 h-10 rounded-full object-cover"
-          />
-          <div className="flex flex-col">
-            <h3 className="font-semibold">{item.name}</h3>
-            <p className="text-xs text-gray-500">{item?.email}</p>
-          </div>
+          <h3 className="font-semibold">{item.title}</h3>
         </div>
       </td>
-      <td className="hidden md:table-cell mt-4">{item.teacherId}</td>
-      <td className="hidden md:table-cell mt-4">{item.subjects.join(",")}</td>
-      <td className="hidden md:table-cell mt-4">{item.classes.join(",")}</td>
-      <td className="hidden lg:table-cell mt-4">{item.phone}</td>
-      <td className="hidden lg:table-cell mt-4">{item.address}</td>
-      <td className="flex items-center gap-2 mt-4">
+      <td className="mt-4">{item.class}</td>
+      <td className="hidden md:table-cell mt-4">{item.date}</td>
+      <td className="hidden md:table-cell mt-4">{item.startTime}</td>
+      <td className="hidden md:table-cell mt-4">{item.endTime}</td>
+      <td className="flex items-center gap-2 my-2">
         <Link href={`list/teachers/${item.id}`}>
           <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky">
-            <Image src={"/view.png"} alt="" width={16} height={16} />
+            <Image src={"/edit.png"} alt="" width={16} height={16} />
           </button>
         </Link>
 
@@ -106,7 +85,7 @@ const TeacherList = () => {
     <div className="p-4 m-4 mt-0 bg-white rounded-md flex-1">
       {/*TOP*/}
       <div className="flex justify-between items-center">
-        <h1 className="text-lg font-semibold hidden md:block">All Teachers</h1>
+        <h1 className="text-lg font-semibold hidden md:block">All Results</h1>
         <div className="flex flex-col gap-4 md:flex-row items-center w-full md:w-auto">
           <TableSearch />
           <div className="flex items-center gap-4 self-end">
@@ -126,7 +105,7 @@ const TeacherList = () => {
       </div>
 
       {/*TEACHER LIST*/}
-      <Table columns={columns} renderRow={renderRow} data={teachersData} />
+      <Table columns={columns} renderRow={renderRow} data={eventsData} />
 
       {/*PAGINATION*/}
       <Pagination />
@@ -134,4 +113,4 @@ const TeacherList = () => {
   );
 };
 
-export default TeacherList;
+export default EventList;

@@ -1,57 +1,27 @@
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
-import { role, teachersData } from "@/lib/data";
+import { role, subjectsData, teachersData } from "@/lib/data";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
-type Teacher = {
+type Subject = {
   id: number;
-  teacherId: string;
   name: string;
-  email?: string;
-  photo: string;
-  phone: string;
-  subjects: string[];
-  classes: string[];
-  address: string;
+  teachers: string[];
 };
 
 const columns = [
   {
-    header: "Info",
+    header: "Subject Name",
     accessor: "info",
   },
 
   {
-    header: "Teacher ID",
-    accessor: "teacherId",
+    header: "Teachers",
+    accessor: "teachers",
     className: "hidden md:table-cell",
-  },
-
-  {
-    header: "Subjects",
-    accessor: "subjects",
-    className: "hidden md:table-cell",
-  },
-
-  {
-    header: "Classes",
-    accessor: "classes",
-    className: "hidden md:table-cell",
-  },
-
-  {
-    header: "Phone",
-    accessor: "phone",
-    className: "hidden lg:table-cell",
-  },
-
-  {
-    header: "Address",
-    accessor: "address",
-    className: "hidden lg:table-cell",
   },
 
   {
@@ -60,33 +30,19 @@ const columns = [
   },
 ];
 
-const TeacherList = () => {
-  const renderRow = (item: Teacher) => (
+const SubjectList = () => {
+  const renderRow = (item: Subject) => (
     <tr
       key={item.id}
       className="border-b border-gray-200 hover:bg-lamaPurpleLight even:bg-slate-50 text-sm"
     >
       <td>
         <div className="flex items-center justify-start gap-4 my-2">
-          <Image
-            src={item.photo}
-            alt="teacher"
-            width={40}
-            height={40}
-            className="md:hidden xl:block w-10 h-10 rounded-full object-cover"
-          />
-          <div className="flex flex-col">
-            <h3 className="font-semibold">{item.name}</h3>
-            <p className="text-xs text-gray-500">{item?.email}</p>
-          </div>
+          <h3 className="font-semibold">{item.name}</h3>
         </div>
       </td>
-      <td className="hidden md:table-cell mt-4">{item.teacherId}</td>
-      <td className="hidden md:table-cell mt-4">{item.subjects.join(",")}</td>
-      <td className="hidden md:table-cell mt-4">{item.classes.join(",")}</td>
-      <td className="hidden lg:table-cell mt-4">{item.phone}</td>
-      <td className="hidden lg:table-cell mt-4">{item.address}</td>
-      <td className="flex items-center gap-2 mt-4">
+      <td className="hidden md:table-cell mt-4">{item.teachers.join(", ")}</td>
+      <td className="flex items-center gap-2 my-2">
         <Link href={`list/teachers/${item.id}`}>
           <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky">
             <Image src={"/view.png"} alt="" width={16} height={16} />
@@ -126,7 +82,7 @@ const TeacherList = () => {
       </div>
 
       {/*TEACHER LIST*/}
-      <Table columns={columns} renderRow={renderRow} data={teachersData} />
+      <Table columns={columns} renderRow={renderRow} data={subjectsData} />
 
       {/*PAGINATION*/}
       <Pagination />
@@ -134,4 +90,4 @@ const TeacherList = () => {
   );
 };
 
-export default TeacherList;
+export default SubjectList;

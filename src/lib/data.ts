@@ -134,7 +134,7 @@ export const studentsData = [
     photo:
       "https://images.pexels.com/photos/2888150/pexels-photo-2888150.jpeg?auto=compress&cs=tinysrgb&w=1200",
     phone: "1234567890",
-    grade: 5,
+    grade: 1,
     class: "1B",
     address: "123 Main St, Anytown, USA",
   },
@@ -421,7 +421,7 @@ export const classesData = [
     supervisor: "Iva Frank",
   },
   {
-    id: 5,
+    id: 6,
     name: "5B",
     capacity: 20,
     grade: 5,
