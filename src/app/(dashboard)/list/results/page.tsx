@@ -138,7 +138,7 @@ const ResultList = () => {
               <div className="flex flex-col items-center">
                 <div className="w-5 h-5 rounded-full bg-[#f5a9a9]" />
                 <h2 className="text-xl font-semibold">Fail</h2>
-                <h2 className="text-s font-semibold">10%</h2>
+                <h2 className="text-s font-semibold">14%</h2>
               </div>
             </div>
           </div>

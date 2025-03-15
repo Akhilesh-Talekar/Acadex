@@ -4,7 +4,7 @@ import { PieChart, Pie, Sector, Cell, ResponsiveContainer } from "recharts";
 
 const data = [
   { name: "Pass", value: 86 },
-  { name: "Group B", value: 14 },
+  { name: "Fail", value: 14 },
 ];
 
 const COLORS = ["#c7f5a9", "#f5a9a9"];

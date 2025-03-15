@@ -1,52 +1,44 @@
 "use client";
 
-import React, { PureComponent } from "react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+import React, { PureComponent } from 'react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
 
 const data = [
-  { range: "0-10", frequency: 2 },
-  { range: "11-20", frequency: 5 },
-  { range: "21-30", frequency: 8 },
-  { range: "31-40", frequency: 15 },
-  { range: "41-50", frequency: 22 },
-  { range: "51-60", frequency: 30 },
+  { range: "0-10", frequency: 1 },
+  { range: "11-20", frequency: 3 },
+  { range: "21-30", frequency: 5 },
+  { range: "31-40", frequency: 8 },
+  { range: "41-50", frequency: 12 },
+  { range: "51-60", frequency: 18 },
   { range: "61-70", frequency: 24 },
-  { range: "71-80", frequency: 18 },
-  { range: "81-90", frequency: 10 },
-  { range: "91-100", frequency: 5 },
+  { range: "71-80", frequency: 30 },
+  { range: "81-90", frequency: 25 },
+  { range: "91-100", frequency: 20 },
 ];
+
 
 const ResultGraph = () => {
   return (
-      <ResponsiveContainer width="100%" height="90%">
-        <LineChart
-          width={500}
-          height={300}
-          data={data}
-          margin={{
-            top: 5,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" vertical={false}/>
-          <XAxis dataKey="range" tick={{ fill: "#d1d5db" }} tickLine={false} axisLine={false} tickMargin={10}/>
-          <YAxis tick={{ fill: "#d1d5db" }} tickLine={false} axisLine={false} tickMargin={10}/>
-          <Tooltip />
-          <Legend />
-          <Line type="monotone" dataKey="frequency" stroke="#82ca9d" strokeWidth={3}/>
-        </LineChart>
-      </ResponsiveContainer>
+    <ResponsiveContainer width="100%" height="90%">
+      <AreaChart
+        width={500}
+        height={400}
+        data={data}
+        margin={{
+          top: 10,
+          right: 30,
+          left: 0,
+          bottom: 0,
+        }}
+      >
+        <CartesianGrid strokeDasharray="3 3" vertical={false}/>
+        <XAxis dataKey="range" tick={{ fill: "#d1d5db" }} tickLine={false} axisLine={false} tickMargin={10}/>
+        <YAxis tick={{ fill: "#d1d5db" }} tickLine={false} axisLine={false} tickMargin={10}/>
+        <Tooltip />
+        <Area type="monotone" dataKey="frequency" stroke="#8884d8" fill="#8884d8" />
+      </AreaChart>
+    </ResponsiveContainer>
   );
 };
 
