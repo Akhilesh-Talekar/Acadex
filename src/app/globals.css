@@ -131,3 +131,61 @@ button.rbc-active {
     font-weight: 500 !important;
   }
 }
+
+/* Add this to your global.css */
+
+/* Button base styling with relative positioning to contain shimmer effect */
+.glitter-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s ease;
+}
+
+/* The shimmer effect */
+.glitter-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 40%; /* Slightly narrower shimmer */
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.2) 50%, /* More subtle shimmer */
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-20deg);
+  animation: shimmer 6s ease-in-out infinite; /* Much slower animation (6s) */
+  pointer-events: none;
+}
+
+/* Hover state interactions */
+.glitter-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.glitter-button:active {
+  transform: translateY(0);
+}
+
+/* Keyframes with longer pauses between animations */
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  15% { /* Animation happens in first 15% of the time */
+    left: 100%;
+  }
+  100% { /* Then waits for the remaining 85% of the time */
+    left: 100%; 
+  }
+}
+
+/* Optional: Enhanced aesthetics */
+.glitter-button {
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  border: none;
+}

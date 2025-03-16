@@ -6,25 +6,29 @@ import ResultPie from "@/components/ResultPie";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import { resultsData, role, subjectsData, teachersData } from "@/lib/data";
+import prisma from "@/lib/prisma";
+import { ITEM_PER_PAGE } from "@/lib/settings";
+import { Assignment, Class, Exam, Lesson, Prisma, Result, Student, Subject, Teacher } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
-type Result = {
-  id: number;
-  subject: string;
-  class: string;
-  teacher: string;
-  student: string;
-  date: string;
-  type: "exam" | "assignment";
-  score: number;
-};
+type resultList = {
+  id : number,
+  title : string,
+  studentName : string,
+  studentSurname : string,
+  teacherName : string,
+  teacherSurname : string,
+  score : number,
+  className : string,
+  startTime : Date
+}
 
 const columns = [
   {
-    header: "Subject Name",
-    accessor: "info",
+    header: "Title",
+    accessor: "title",
   },
 
   {
@@ -62,32 +66,137 @@ const columns = [
   },
 ];
 
-const ResultList = () => {
-  const renderRow = (item: Result) => (
-    <tr
-      key={item.id}
-      className="border-b border-gray-200 hover:bg-lamaPurpleLight even:bg-slate-50 text-sm"
-    >
-      <td>
-        <div className="flex items-center justify-start gap-4 my-2">
-          <h3 className="font-semibold">{item.subject}</h3>
-        </div>
-      </td>
-      <td className="mt-4">{item.student}</td>
-      <td className="hidden md:table-cell mt-4">{item.score}</td>
-      <td className="hidden md:table-cell mt-4">{item.teacher}</td>
-      <td className="hidden md:table-cell mt-4">{item.class}</td>
-      <td className="hidden md:table-cell mt-4">{item.date}</td>
-      <td className="flex items-center gap-2 my-2">
-        {role === "admin" && (
-          <>
-            <FormModal table="result" type="update" data={item} />
-            <FormModal table="result" type="delete" id={item.id} />
-          </>
-        )}
-      </td>
-    </tr>
-  );
+const renderRow = (item: resultList) => (
+  <tr
+    key={item.id}
+    className="border-b border-gray-200 hover:bg-lamaPurpleLight even:bg-slate-50 text-sm"
+  >
+    <td>
+      <div className="flex items-center justify-start gap-4 my-2">
+        <h3 className="font-semibold">{item.title}</h3>
+      </div>
+    </td>
+    <td className="mt-4">{item.studentName + " " + item.studentSurname}</td>
+    <td className="hidden md:table-cell mt-4">{item.score}</td>
+    <td className="hidden md:table-cell mt-4">{item.teacherName + " " + item.teacherSurname}</td>
+    <td className="hidden md:table-cell mt-4">{item.className}</td>
+    <td className="hidden md:table-cell mt-4">{new Intl.DateTimeFormat("en-IN").format(item.startTime)}</td>
+    <td className="flex items-center gap-2 my-2">
+      {role === "admin" && (
+        <>
+          <FormModal table="result" type="update" data={item} />
+          <FormModal table="result" type="delete" id={item.id} />
+        </>
+      )}
+    </td>
+  </tr>
+);
+
+const ResultList = async({searchParams}:{searchParams:{[key:string]:string | undefined}}) => {
+  const { page, ...queryParams } = searchParams;
+  const p = page ? parseInt(page) : 1;
+
+  //URL PARAMS CONDITIONS
+
+  const query: Prisma.ResultWhereInput = {};
+
+  for (const [key, value] of Object.entries(queryParams)) {
+    if (value !== undefined) {
+      switch (key) {
+        case "studentId":
+          query.studentId = value;
+          break;
+
+        case "search":
+          query.OR = [
+            {
+              student: {
+                name: {
+                  contains: value,
+                  mode: "insensitive",
+                },
+              },
+            },
+            {
+              exam: {
+                title: {
+                  contains: value,
+                  mode: "insensitive",
+                },
+              }
+            },
+            {
+              assignment: {
+                title: {
+                  contains: value,
+                  mode: "insensitive",
+                },
+              }
+            }
+          ]
+          break;
+
+        default:
+          break;
+      }
+    }
+  }
+
+  const [dataResp, count] = await prisma.$transaction([
+    prisma.result.findMany({
+      where: query,
+      include: {
+        student: true,
+        exam: {
+          include: {
+            lesson: {
+              include: {
+                teacher: true,
+                subject: true,
+                class: true,
+              },
+            },
+          },
+        },
+        assignment: {
+          include: {
+            lesson: {
+              include: {
+                teacher: true,
+                subject: true,
+                class: true,
+              },
+            },
+          },
+        }
+      },
+      take: ITEM_PER_PAGE,
+      skip: ITEM_PER_PAGE * (p - 1),
+    }),
+
+    prisma.result.count({
+      where: query,
+    }),
+  ]);
+
+  const data = dataResp.map((item) => {
+    const assesment = item.exam || item.assignment;
+
+    if(!assesment) return null;
+
+    const isExam = "startTime" in assesment;
+    return{
+      id: item.id,
+      title: assesment.title,
+      studentName: item.student.name,
+      studentSurname: item.student.surname,
+      teacherName: assesment.lesson.teacher.name,
+      teacherSurname: assesment.lesson.teacher.surname,
+      score: item.score,
+      className: assesment.lesson.class.name,
+      startTime: isExam ? assesment.startTime : assesment.startDate,
+    }
+  })
 
   return (
     <div className="p-4 m-4 mt-0 bg-white rounded-md flex-1">
@@ -109,10 +218,10 @@ const ResultList = () => {
       </div>
 
       {/*TEACHER LIST*/}
-      <Table columns={columns} renderRow={renderRow} data={resultsData} />
+      <Table columns={columns} renderRow={renderRow} data={data} />
 
       {/*PAGINATION*/}
-      <Pagination />
+      <Pagination page={p} count={count}/>
 
       {/* GRAPHICAL REPRESENTSTIONS */}
       <div className="flex flex-col md:flex-row gap-4 mt-4">
