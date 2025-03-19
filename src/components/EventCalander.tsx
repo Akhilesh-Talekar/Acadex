@@ -84,7 +84,7 @@ const EventCalander = () => {
   const [value, onChange] = useState<Value>(new Date());
   return (
     <div className="bg-white rounded-xl p-4">
-      <Calendar onChange={onChange} value={value} />
+      <Calendar onChange={onChange} value={value} locale="en-IN"/>
       <div className="flex justify-between items-center my-4">
         <h1 className="text-xl font-semibold">Events</h1>
         <Image src={"/moreDark.png"} alt="more" width={20} height={20}/>

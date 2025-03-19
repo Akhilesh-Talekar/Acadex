@@ -5,25 +5,35 @@ import ResultGraph from "@/components/ResultGraph";
 import ResultPie from "@/components/ResultPie";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
-import { resultsData, role, subjectsData, teachersData } from "@/lib/data";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
-import { Assignment, Class, Exam, Lesson, Prisma, Result, Student, Subject, Teacher } from "@prisma/client";
+import { currUserId, role } from "@/lib/utils";
+import {
+  Assignment,
+  Class,
+  Exam,
+  Lesson,
+  Prisma,
+  Result,
+  Student,
+  Subject,
+  Teacher,
+} from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
 type resultList = {
-  id : number,
-  title : string,
-  studentName : string,
-  studentSurname : string,
-  teacherName : string,
-  teacherSurname : string,
-  score : number,
-  className : string,
-  startTime : Date
-}
+  id: number;
+  title: string;
+  studentName: string;
+  studentSurname: string;
+  teacherName: string;
+  teacherSurname: string;
+  score: number;
+  className: string;
+  startTime: Date;
+};
 
 const columns = [
   {
@@ -63,6 +73,7 @@ const columns = [
   {
     header: "Actions",
     accessor: "actions",
+    className: `${role === "admin" || role === "teacher" ? "" : "hidden"}`,
   },
 ];
 
@@ -78,21 +89,30 @@ const renderRow = (item: resultList) => (
     </td>
     <td className="mt-4">{item.studentName + " " + item.studentSurname}</td>
     <td className="hidden md:table-cell mt-4">{item.score}</td>
-    <td className="hidden md:table-cell mt-4">{item.teacherName + " " + item.teacherSurname}</td>
+    <td className="hidden md:table-cell mt-4">
+      {item.teacherName + " " + item.teacherSurname}
+    </td>
     <td className="hidden md:table-cell mt-4">{item.className}</td>
-    <td className="hidden md:table-cell mt-4">{new Intl.DateTimeFormat("en-IN").format(item.startTime)}</td>
+    <td className="hidden md:table-cell mt-4">
+      {new Intl.DateTimeFormat("en-IN").format(item.startTime)}
+    </td>
     <td className="flex items-center gap-2 my-2">
-      {role === "admin" && (
-        <>
-          <FormModal table="result" type="update" data={item} />
-          <FormModal table="result" type="delete" id={item.id} />
-        </>
-      )}
+      {role === "admin" ||
+        (role === "teacher" && (
+          <>
+            <FormModal table="result" type="update" data={item} />
+            <FormModal table="result" type="delete" id={item.id} />
+          </>
+        ))}
     </td>
   </tr>
 );
 
-const ResultList = async({searchParams}:{searchParams:{[key:string]:string | undefined}}) => {
+const ResultList = async ({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | undefined };
+}) => {
   const { page, ...queryParams } = searchParams;
   const p = page ? parseInt(page) : 1;
 
@@ -123,7 +143,7 @@ const ResultList = async({searchParams}:{searchParams:{[key:string]:string | und
                   contains: value,
                   mode: "insensitive",
                 },
-              }
+              },
             },
             {
               assignment: {
@@ -131,15 +151,60 @@ const ResultList = async({searchParams}:{searchParams:{[key:string]:string | und
                   contains: value,
                   mode: "insensitive",
                 },
-              }
-            }
-          ]
+              },
+            },
+          ];
           break;
 
         default:
           break;
       }
     }
+  }
+
+  // Store role-based OR conditions separately
+  let roleConditions: any[] = [];
+
+  switch (role) {
+    case "admin":
+      break;
+
+    case "teacher":
+      roleConditions = [
+        {
+          exam: {
+            lesson: {
+              teacherId: currUserId!,
+            },
+          },
+        },
+        {
+          assignment: {
+            lesson: {
+              teacherId: currUserId!,
+            },
+          },
+        },
+      ];
+      break;
+
+    case "student":
+      query.studentId = currUserId!;
+      break;
+
+    case "parent":
+      query.student = {
+        parentId: currUserId!,
+      };
+      break;
+  }
+
+  // Merge search and role-based OR conditions (if they exist)
+  if (query.OR && roleConditions.length) {
+    query.AND = [{ OR: query.OR }, { OR: roleConditions }];
+    delete query.OR; // Remove OR from root to prevent conflicts
+  } else if (roleConditions.length) {
+    query.OR = roleConditions; // If no search, just apply role conditions
   }
 
   const [dataResp, count] = await prisma.$transaction([
@@ -168,7 +233,7 @@ const ResultList = async({searchParams}:{searchParams:{[key:string]:string | und
               },
             },
           },
-        }
+        },
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
@@ -182,10 +247,10 @@ const ResultList = async({searchParams}:{searchParams:{[key:string]:string | und
   const data = dataResp.map((item) => {
     const assesment = item.exam || item.assignment;
 
-    if(!assesment) return null;
+    if (!assesment) return null;
 
     const isExam = "startTime" in assesment;
-    return{
+    return {
       id: item.id,
       title: assesment.title,
       studentName: item.student.name,
@@ -195,8 +260,8 @@ const ResultList = async({searchParams}:{searchParams:{[key:string]:string | und
       score: item.score,
       className: assesment.lesson.class.name,
       startTime: isExam ? assesment.startTime : assesment.startDate,
-    }
-  })
+    };
+  });
 
   return (
     <div className="p-4 m-4 mt-0 bg-white rounded-md flex-1">
@@ -212,7 +277,10 @@ const ResultList = async({searchParams}:{searchParams:{[key:string]:string | und
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow hover:bg-lamaPurple">
               <Image src={"/sort.png"} alt="fltr" width={14} height={14} />
             </button>
-            {role === "admin" && <FormModal table="result" type="create" />}
+            {role === "admin" ||
+              (role === "teacher" && (
+                <FormModal table="result" type="create" />
+              ))}
           </div>
         </div>
       </div>
@@ -221,7 +289,7 @@ const ResultList = async({searchParams}:{searchParams:{[key:string]:string | und
       <Table columns={columns} renderRow={renderRow} data={data} />
 
       {/*PAGINATION*/}
-      <Pagination page={p} count={count}/>
+      <Pagination page={p} count={count} />
 
       {/* GRAPHICAL REPRESENTSTIONS */}
       <div className="flex flex-col md:flex-row gap-4 mt-4">

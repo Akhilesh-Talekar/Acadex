@@ -4,6 +4,7 @@ import EventCalander from "@/components/EventCalander";
 import React from "react";
 
 const TeacherPage = () => {
+  
   return (
     <div className="flex-1 p-4 flex flex-col xl:flex-row gap-4">
       {/* Left */}

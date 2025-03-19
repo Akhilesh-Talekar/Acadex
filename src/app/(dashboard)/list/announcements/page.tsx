@@ -2,9 +2,9 @@ import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
-import { announcementsData, role, teachersData } from "@/lib/data";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
+import { currUserId, role } from "@/lib/utils";
 import { Announcement, Class, Prisma } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
@@ -48,7 +48,7 @@ const renderRow = (item: announcementList) => (
         </div>
       </div>
     </td>
-    <td className="mt-4">{item.class.name}</td>
+    <td className="mt-4">{item.class?.name || "-"}</td>
     <td className="hidden md:table-cell mt-4">
       {new Date(item.date).toLocaleDateString("en-IN")}
     </td>
@@ -96,12 +96,50 @@ const AnnouncementList = async ({
             },
           ];
           break;
-
+  
         default:
           break;
       }
     }
   }
+  
+  
+  // Role Conditions
+  let roleConditions:any = [];
+  
+  switch (role) {
+    case "admin":
+      break;
+  
+    case "teacher":
+      roleConditions = [
+        { classId: null },
+        { class: { lessons: { some: { teacherId: currUserId! } } } },
+      ];
+      break;
+  
+    case "student":
+      roleConditions = [
+        { classId: null },
+        { class: { students: { some: { id: currUserId! } } } },
+      ];
+      break;
+  
+    case "parent":
+      roleConditions = [
+        { classId: null },
+        { class: { students: { some: { parentId: currUserId! } } } },
+      ];
+      break;
+  }
+  
+  // Ensure AND condition between search and role-based filtering
+  query.AND = [
+    { OR: query.OR }, // Search conditions
+    { OR: roleConditions.length ? roleConditions : [{}] }, // Role conditions
+  ];
+
+  delete query.OR; // Remove OR from root to avoid conflict
 
   const [data, count] = await prisma.$transaction([
     prisma.announcement.findMany({
