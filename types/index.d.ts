@@ -28,3 +28,17 @@ declare interface TeacherFormProps {
     err?: FieldError;
     inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
 }
+
+declare type data = {
+    name: string;
+    present: number;
+    absent: number;
+}
+
+declare interface AttendanceChartProps {
+    data: data[];
+}
+
+declare type createSubjectType = {
+    name: string;
+}

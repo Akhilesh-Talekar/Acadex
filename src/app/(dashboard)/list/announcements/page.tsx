@@ -96,35 +96,34 @@ const AnnouncementList = async ({
             },
           ];
           break;
-  
+
         default:
           break;
       }
     }
   }
-  
-  
+
   // Role Conditions
-  let roleConditions:any = [];
-  
+  let roleConditions: any = [];
+
   switch (role) {
     case "admin":
       break;
-  
+
     case "teacher":
       roleConditions = [
         { classId: null },
         { class: { lessons: { some: { teacherId: currUserId! } } } },
       ];
       break;
-  
+
     case "student":
       roleConditions = [
         { classId: null },
         { class: { students: { some: { id: currUserId! } } } },
       ];
       break;
-  
+
     case "parent":
       roleConditions = [
         { classId: null },
@@ -132,13 +131,13 @@ const AnnouncementList = async ({
       ];
       break;
   }
-  
-  // Ensure AND condition between search and role-based filtering
-  query.AND = [
-    { OR: query.OR }, // Search conditions
-    { OR: roleConditions.length ? roleConditions : [{}] }, // Role conditions
-  ];
 
+  if (roleConditions.length) {
+    query.AND = [{ OR: query.OR }, { OR: roleConditions }];
+  } else {
+    query.AND = [{ OR: query.OR }]; // No role filter, effectively "ignore" it
+  }
+  
   delete query.OR; // Remove OR from root to avoid conflict
 
   const [data, count] = await prisma.$transaction([

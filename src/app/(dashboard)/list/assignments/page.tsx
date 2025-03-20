@@ -73,13 +73,12 @@ const renderRow = (item: assignmentList) => (
       {new Intl.DateTimeFormat("en-IN").format(item.dueDate)}
     </td>
     <td className="flex items-center gap-2 my-2">
-      {role === "admin" ||
-        (role === "teacher" && (
+      {(role === "admin" || role === "teacher") && (
           <>
             <FormModal table="assignment" type="update" data={item} />
             <FormModal table="assignment" type="delete" id={item.id} />
           </>
-        ))}
+        )}
     </td>
   </tr>
 );
@@ -144,16 +143,16 @@ const AssignmentList = async ({
 
     case "parent":
       query.lesson.class = {
-        students:{
-          some:{
-            parentId: currUserId!
-          }
-        }
-      }
+        students: {
+          some: {
+            parentId: currUserId!,
+          },
+        },
+      };
       break;
 
     default:
-      break; 
+      break;
   }
 
   const [data, count] = await prisma.$transaction([
@@ -197,10 +196,9 @@ const AssignmentList = async ({
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow hover:bg-lamaPurple">
               <Image src={"/sort.png"} alt="fltr" width={14} height={14} />
             </button>
-            {role === "admin" ||
-              (role === "teacher" && (
+            {(role === "admin" || role === "teacher") && (
                 <FormModal table="assignment" type="create" />
-              ))}
+              )}
           </div>
         </div>
       </div>

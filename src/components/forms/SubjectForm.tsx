@@ -1,16 +1,14 @@
 "use client";
 import React from "react";
-import InputField from "../InputField";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import Image from "next/image";
+import InputField from "../InputField";
+import { createSubject } from "@/lib/actions";
+import {toast } from "react-toastify";
 
 const schema = z.object({
   name: z.string().min(1, { message: "Subject name is required!" }),
-  teachers: z
-    .array(z.string())
-    .min(1, { message: "At least one teacher is required!" }),
 });
 
 type Inputs = z.infer<typeof schema>;
@@ -30,8 +28,26 @@ const SubjectForm = ({
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = handleSubmit((data) => {
-    console.log(data);
+  const handleError = (err:string) =>
+    toast.error(err, {
+      position: "bottom-left",
+    });
+
+  const handleSuccess = (msg:string) =>
+    toast.success(msg, {
+      position: "bottom-left",
+      autoClose: 2000,
+    });
+  
+
+  const onSubmit = handleSubmit(async(data) => {
+    let response = await createSubject(data);
+    if(response.success){
+      handleSuccess(response.message);
+    }
+    else{
+      handleError(response.message);
+    }
   });
 
   return (
@@ -46,28 +62,14 @@ const SubjectForm = ({
       </span>
 
       <div className="flex justify-between flex-wrap gap-4">
-        <div className="flex flex-col gap-2 w-full md:w-[45%]">
-          <label className="text-xs text-gray-400">Subject Name</label>
-          <input
-            type="text"
-            {...register("name")}
-            defaultValue={data?.name}
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-          />
-        </div>
-
-        <div className="flex flex-col gap-2 w-full md:w-[45%]">
-        <label className="text-xs text-gray-400">Teachers</label>
-        <input
+        <InputField
+          label="Subject Name"
           type="text"
-          {...register("teachers", {
-            setValueAs: (value) => value.split(",").map((t: any) => t.trim()), // Convert CSV to array
-          })}
-          defaultValue={data?.teachers?.join(", ")}
-          className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-          placeholder="Enter teachers (comma-separated)"
+          register={register}
+          name="name"
+          defaultValue={data?.name}
+          err={errors.name}
         />
-        </div>
       </div>
       <button className="bg-blue-500 text-white rounded-md p-2">
         {type == "create" ? "Register" : "Update"}
