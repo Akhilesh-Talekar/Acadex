@@ -7,7 +7,7 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
-import { currUserId, role } from "@/lib/utils";
+import { getRole } from "@/lib/utils";
 import {
   Assignment,
   Class,
@@ -35,86 +35,91 @@ type resultList = {
   startTime: Date;
 };
 
-const columns = [
-  {
-    header: "Title",
-    accessor: "title",
-  },
 
-  {
-    header: "Student",
-    accessor: "student",
-  },
-
-  {
-    header: "Score",
-    accessor: "score",
-    className: "hidden md:table-cell",
-  },
-
-  {
-    header: "Teacher",
-    accessor: "teacher",
-    className: "hidden md:table-cell",
-  },
-
-  {
-    header: "Class",
-    accessor: "class",
-    className: "hidden md:table-cell",
-  },
-
-  {
-    header: "Date",
-    accessor: "date",
-    className: "hidden md:table-cell",
-  },
-
-  {
-    header: "Actions",
-    accessor: "actions",
-    className: `${role === "admin" || role === "teacher" ? "" : "hidden"}`,
-  },
-];
-
-const renderRow = (item: resultList) => (
-  <tr
-    key={item.id}
-    className="border-b border-gray-200 hover:bg-lamaPurpleLight even:bg-slate-50 text-sm"
-  >
-    <td>
-      <div className="flex items-center justify-start gap-4 my-2">
-        <h3 className="font-semibold">{item.title}</h3>
-      </div>
-    </td>
-    <td className="mt-4">{item.studentName + " " + item.studentSurname}</td>
-    <td className="hidden md:table-cell mt-4">{item.score}</td>
-    <td className="hidden md:table-cell mt-4">
-      {item.teacherName + " " + item.teacherSurname}
-    </td>
-    <td className="hidden md:table-cell mt-4">{item.className}</td>
-    <td className="hidden md:table-cell mt-4">
-      {new Intl.DateTimeFormat("en-IN").format(item.startTime)}
-    </td>
-    <td className="flex items-center gap-2 my-2">
-      {role === "admin" ||
-        (role === "teacher" && (
-          <>
-            <FormModal table="result" type="update" data={item} />
-            <FormModal table="result" type="delete" id={item.id} />
-          </>
-        ))}
-    </td>
-  </tr>
-);
 
 const ResultList = async ({
   searchParams,
 }: {
   searchParams: { [key: string]: string | undefined };
 }) => {
+  const { role, currUserId } = await getRole();
   const { page, ...queryParams } = searchParams;
   const p = page ? parseInt(page) : 1;
+
+  //RenderRow and Column
+
+  const columns = [
+    {
+      header: "Title",
+      accessor: "title",
+    },
+  
+    {
+      header: "Student",
+      accessor: "student",
+    },
+  
+    {
+      header: "Score",
+      accessor: "score",
+      className: "hidden md:table-cell",
+    },
+  
+    {
+      header: "Teacher",
+      accessor: "teacher",
+      className: "hidden md:table-cell",
+    },
+  
+    {
+      header: "Class",
+      accessor: "class",
+      className: "hidden md:table-cell",
+    },
+  
+    {
+      header: "Date",
+      accessor: "date",
+      className: "hidden md:table-cell",
+    },
+  
+    {
+      header: "Actions",
+      accessor: "actions",
+      className: `${role === "admin" || role === "teacher" ? "" : "hidden"}`,
+    },
+  ];
+  
+  const renderRow = (item: resultList) => (
+    <tr
+      key={item.id}
+      className="border-b border-gray-200 hover:bg-lamaPurpleLight even:bg-slate-50 text-sm"
+    >
+      <td>
+        <div className="flex items-center justify-start gap-4 my-2">
+          <h3 className="font-semibold">{item.title}</h3>
+        </div>
+      </td>
+      <td className="mt-4">{item.studentName + " " + item.studentSurname}</td>
+      <td className="hidden md:table-cell mt-4">{item.score}</td>
+      <td className="hidden md:table-cell mt-4">
+        {item.teacherName + " " + item.teacherSurname}
+      </td>
+      <td className="hidden md:table-cell mt-4">{item.className}</td>
+      <td className="hidden md:table-cell mt-4">
+        {new Intl.DateTimeFormat("en-IN").format(item.startTime)}
+      </td>
+      <td className="flex items-center gap-2 my-2">
+        {role === "admin" ||
+          (role === "teacher" && (
+            <>
+              <FormModal table="result" type="update" data={item} />
+              <FormModal table="result" type="delete" id={item.id} />
+            </>
+          ))}
+      </td>
+    </tr>
+  );
 
   //URL PARAMS CONDITIONS
 

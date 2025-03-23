@@ -4,7 +4,7 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
-import { currUserId, role } from "@/lib/utils";
+import { getRole } from "@/lib/utils";
 import { Class, Event, Prisma } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
@@ -12,88 +12,94 @@ import React from "react";
 
 type eventList = Event & { class: Class };
 
-const columns = [
-  {
-    header: "Title",
-    accessor: "title",
-  },
 
-  {
-    header: "Class",
-    accessor: "class",
-  },
-
-  {
-    header: "Date",
-    accessor: "date",
-    className: "hidden md:table-cell",
-  },
-
-  {
-    header: "Start Time",
-    accessor: "starttime",
-    className: "hidden md:table-cell",
-  },
-
-  {
-    header: "End Time",
-    accessor: "endtime",
-    className: "hidden md:table-cell",
-  },
-
-  {
-    header: "Actions",
-    accessor: "actions",
-    className: `${role === "admin" ? "" : "hidden"}`,
-  },
-];
-
-const renderRow = (item: eventList) => (
-  <tr
-    key={item.id}
-    className="border-b border-gray-200 hover:bg-lamaPurpleLight even:bg-slate-50 text-sm"
-  >
-    <td>
-      <div className="flex items-center justify-start gap-4 my-2">
-        <h3 className="font-semibold">{item.title}</h3>
-      </div>
-    </td>
-    <td className="mt-4">{item.class?.name || "-"}</td>
-    <td className="hidden md:table-cell mt-4">
-      {new Intl.DateTimeFormat("en-IN").format(item.startTime)}
-    </td>
-    <td className="hidden md:table-cell mt-4">
-      {item.startTime.toLocaleTimeString("en-IN", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-      })}
-    </td>
-    <td className="hidden md:table-cell mt-4">
-      {item.endTime.toLocaleTimeString("en-IN", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-      })}
-    </td>
-    <td className="flex items-center gap-2 my-2">
-      {role === "admin" && (
-        <>
-          <FormModal table="event" type="update" data={item} />
-          <FormModal table="event" type="delete" id={item.id} />
-        </>
-      )}
-    </td>
-  </tr>
-);
 
 const EventList = async ({
   searchParams,
 }: {
   searchParams: { [key: string]: string | undefined };
 }) => {
+
+  const { role, currUserId } = await getRole();
   const { page, ...queryParams } = searchParams;
   const p = page ? parseInt(page) : 1;
+
+  //RenderRow and Column
+
+  const columns = [
+    {
+      header: "Title",
+      accessor: "title",
+    },
+  
+    {
+      header: "Class",
+      accessor: "class",
+    },
+  
+    {
+      header: "Date",
+      accessor: "date",
+      className: "hidden md:table-cell",
+    },
+  
+    {
+      header: "Start Time",
+      accessor: "starttime",
+      className: "hidden md:table-cell",
+    },
+  
+    {
+      header: "End Time",
+      accessor: "endtime",
+      className: "hidden md:table-cell",
+    },
+  
+    {
+      header: "Actions",
+      accessor: "actions",
+      className: `${role === "admin" ? "" : "hidden"}`,
+    },
+  ];
+  
+  const renderRow = (item: eventList) => (
+    <tr
+      key={item.id}
+      className="border-b border-gray-200 hover:bg-lamaPurpleLight even:bg-slate-50 text-sm"
+    >
+      <td>
+        <div className="flex items-center justify-start gap-4 my-2">
+          <h3 className="font-semibold">{item.title}</h3>
+        </div>
+      </td>
+      <td className="mt-4">{item.class?.name || "-"}</td>
+      <td className="hidden md:table-cell mt-4">
+        {new Intl.DateTimeFormat("en-IN").format(item.startTime)}
+      </td>
+      <td className="hidden md:table-cell mt-4">
+        {item.startTime.toLocaleTimeString("en-IN", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        })}
+      </td>
+      <td className="hidden md:table-cell mt-4">
+        {item.endTime.toLocaleTimeString("en-IN", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        })}
+      </td>
+      <td className="flex items-center gap-2 my-2">
+        {role === "admin" && (
+          <>
+            <FormModal table="event" type="update" data={item} />
+            <FormModal table="event" type="delete" id={item.id} />
+          </>
+        )}
+      </td>
+    </tr>
+  );
 
   //URL PARAMS CONDITIONS
 

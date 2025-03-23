@@ -4,51 +4,69 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import InputField from "../InputField";
-import { createSubject } from "@/lib/actions";
-import {toast } from "react-toastify";
+import { createSubject, updateSubject } from "@/lib/actions";
+import toast from "react-hot-toast";
 
-const schema = z.object({
+export const subjectSchema = z.object({
+  id: z.coerce.number().optional(),
   name: z.string().min(1, { message: "Subject name is required!" }),
+  teachers: z.array(z.string()).optional(),
 });
 
-type Inputs = z.infer<typeof schema>;
+export type SubjectSchema = z.infer<typeof subjectSchema>;
 
 const SubjectForm = ({
   type,
   data,
+  setOpen,
+  relatedData,
 }: {
   type: "create" | "update";
   data?: any;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  relatedData?: any;
 }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Inputs>({
-    resolver: zodResolver(schema),
+  } = useForm<SubjectSchema>({
+    resolver: zodResolver(subjectSchema),
   });
 
-  const handleError = (err:string) =>
+  const handleError = (err: string) =>
     toast.error(err, {
       position: "bottom-left",
     });
 
-  const handleSuccess = (msg:string) =>
+  const handleSuccess = (msg: string) =>
     toast.success(msg, {
       position: "bottom-left",
-      autoClose: 2000,
+      duration: 2000,
     });
-  
 
-  const onSubmit = handleSubmit(async(data) => {
-    let response = await createSubject(data);
-    if(response.success){
-      handleSuccess(response.message);
-    }
-    else{
-      handleError(response.message);
+  const onSubmit = handleSubmit(async (dataFromForm) => {
+    if (type === "create") {
+      console.log(dataFromForm);
+      let response = await createSubject(dataFromForm);
+      if (response.success) {
+        handleSuccess(response.message);
+        setOpen(false);
+      } else {
+        handleError(response.message);
+      }
+    } else {
+      let response = await updateSubject({ id: data.id, dataFromForm });
+      if (response.success) {
+        handleSuccess(response.message);
+        setOpen(false);
+      } else {
+        handleError(response.message);
+      }
     }
   });
+
+  const { teachers } = relatedData;
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -70,6 +88,31 @@ const SubjectForm = ({
           defaultValue={data?.name}
           err={errors.name}
         />
+
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <label className="text-xs text-gray-400">Select Teachers</label>
+          <select
+            multiple
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            {...register("teachers")}
+            defaultValue={data?.teachers}
+          >
+            {teachers?.map(
+              (teacher: { id: string; name: string; surname: string }) => {
+                return (
+                  <option key={teacher.id} value={teacher.id}>
+                    {teacher.name + " " + teacher.surname}
+                  </option>
+                );
+              }
+            )}
+          </select>
+          {errors.teachers?.message && (
+            <p className="text-xs text-red-500">
+              {errors.teachers?.message.toString()}
+            </p>
+          )}
+        </div>
       </div>
       <button className="bg-blue-500 text-white rounded-md p-2">
         {type == "create" ? "Register" : "Update"}

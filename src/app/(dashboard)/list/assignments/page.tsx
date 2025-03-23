@@ -4,7 +4,7 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
-import { currUserId, role } from "@/lib/utils";
+import { getRole } from "@/lib/utils";
 import {
   Assignment,
   Class,
@@ -23,73 +23,77 @@ type assignmentList = Assignment & {
   };
 };
 
-const columns = [
-  {
-    header: "Subject",
-    accessor: "info",
-  },
-
-  {
-    header: "Class",
-    accessor: "class",
-  },
-
-  {
-    header: "Teacher",
-    accessor: "teacher",
-    className: "hidden md:table-cell",
-  },
-
-  {
-    header: "Due Date",
-    accessor: "duedate",
-    className: "hidden md:table-cell",
-  },
-
-  {
-    header: "Actions",
-    accessor: "actions",
-    className: `${role === "admin" || role === "teacher" ? "" : "hidden"}`,
-  },
-];
-
-const renderRow = (item: assignmentList) => (
-  <tr
-    key={item.id}
-    className="border-b border-gray-200 hover:bg-lamaPurpleLight even:bg-slate-50 text-sm"
-  >
-    <td>
-      <div className="flex items-center justify-start gap-4 my-2">
-        <div className="flex flex-col">
-          <h3 className="font-semibold">{item.lesson.subject.name}</h3>
-        </div>
-      </div>
-    </td>
-    <td className="mt-4">{item.lesson.class.name}</td>
-    <td className="hidden md:table-cell mt-4">
-      {item.lesson.teacher.name + " " + item.lesson.teacher.surname}
-    </td>
-    <td className="hidden md:table-cell mt-4">
-      {new Intl.DateTimeFormat("en-IN").format(item.dueDate)}
-    </td>
-    <td className="flex items-center gap-2 my-2">
-      {(role === "admin" || role === "teacher") && (
-          <>
-            <FormModal table="assignment" type="update" data={item} />
-            <FormModal table="assignment" type="delete" id={item.id} />
-          </>
-        )}
-    </td>
-  </tr>
-);
-
 const AssignmentList = async ({
   searchParams,
 }: {
   searchParams: { [key: string]: string | undefined };
 }) => {
+  const { role, currUserId } = await getRole();
+  console.log(role);
   const { page, ...queryParams } = searchParams;
   const p = page ? parseInt(page) : 1;
+
+  //RenderRow and Column
+
+  const columns = [
+    {
+      header: "Subject",
+      accessor: "info",
+    },
+
+    {
+      header: "Class",
+      accessor: "class",
+    },
+
+    {
+      header: "Teacher",
+      accessor: "teacher",
+      className: "hidden md:table-cell",
+    },
+
+    {
+      header: "Due Date",
+      accessor: "duedate",
+      className: "hidden md:table-cell",
+    },
+
+    {
+      header: "Actions",
+      accessor: "actions",
+      className: `${role === "admin" || role === "teacher" ? "" : "hidden"}`,
+    },
+  ];
+
+  const renderRow = (item: assignmentList) => (
+    <tr
+      key={item.id}
+      className="border-b border-gray-200 hover:bg-lamaPurpleLight even:bg-slate-50 text-sm"
+    >
+      <td>
+        <div className="flex items-center justify-start gap-4 my-2">
+          <div className="flex flex-col">
+            <h3 className="font-semibold">{item.lesson.subject.name}</h3>
+          </div>
+        </div>
+      </td>
+      <td className="mt-4">{item.lesson.class.name}</td>
+      <td className="hidden md:table-cell mt-4">
+        {item.lesson.teacher.name + " " + item.lesson.teacher.surname}
+      </td>
+      <td className="hidden md:table-cell mt-4">
+        {new Intl.DateTimeFormat("en-IN").format(item.dueDate)}
+      </td>
+      <td className="flex items-center gap-2 my-2">
+        {(role === "admin" || role === "teacher") && (
+          <>
+            <FormModal table="assignment" type="update" data={item} />
+            <FormModal table="assignment" type="delete" id={item.id} />
+          </>
+        )}
+      </td>
+    </tr>
+  );
 
   //URL PARAMS CONDITIONS
 
@@ -103,8 +107,14 @@ const AssignmentList = async ({
           query.lesson.teacherId = value;
           break;
 
-        case "classId":
-          query.lesson.classId = parseInt(value);
+        case "studentId":
+          query.lesson.class = {
+            students: {
+              some: {
+                id: value,
+              },
+            },
+          };
           break;
 
         case "search":
@@ -197,8 +207,8 @@ const AssignmentList = async ({
               <Image src={"/sort.png"} alt="fltr" width={14} height={14} />
             </button>
             {(role === "admin" || role === "teacher") && (
-                <FormModal table="assignment" type="create" />
-              )}
+              <FormModal table="assignment" type="create" />
+            )}
           </div>
         </div>
       </div>

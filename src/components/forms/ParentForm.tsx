@@ -5,45 +5,86 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Image from "next/image";
+import toast from "react-hot-toast";
+import { createParent, updateParent } from "@/lib/actions";
+import { Student } from "@prisma/client";
 
-const schema = z.object({
+const parentSchema = z.object({
+  id: z.string().optional(),
   username: z
     .string()
     .min(3, { message: "Username must be atleast 3 characters long!" })
     .max(20, { message: "Username must be atmost 20 characters long!" }),
-  email: z.string().email({ message: "Invalid email address!" }),
   password: z
     .string()
-    .min(8, { message: "Password must be atleast 8 characters long!" }),
-  firstName: z.string().min(1, { message: "First name is required!" }),
-  lastName: z.string().min(1, { message: "last name is required!" }),
-  phone: z.string().min(1, { message: "phone number is required!" }),
+    .min(8, { message: "Password must be atleast 8 characters long!" })
+    .optional()
+    .or(z.literal("")),
+  name: z.string().min(1, { message: "First name is required!" }),
+  surname: z.string().min(1, { message: "last name is required!" }),
+  email: z
+    .string()
+    .email({ message: "Invalid email address!" })
+    .optional()
+    .or(z.literal("")),
+  phone: z.string(),
   address: z.string().min(1, { message: "address is required!" }),
-  students: z
-    .array(z.string())
-    .min(1, { message: "At least one student is required!" }),
+  students: z.array(z.string()).optional(),
 });
 
-type Inputs = z.infer<typeof schema>;
+export type ParentSchema = z.infer<typeof parentSchema>;
 
 const ParentForm = ({
   type,
   data,
+  setOpen,
+  relatedData,
 }: {
   type: "create" | "update";
   data?: any;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  relatedData?: any;
 }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Inputs>({
-    resolver: zodResolver(schema),
+  } = useForm<ParentSchema>({
+    resolver: zodResolver(parentSchema),
   });
 
-  const onSubmit = handleSubmit((data) => {
-    console.log(data);
+  const handleError = (err: string) =>
+    toast.error(err, {
+      position: "bottom-left",
+    });
+
+  const handleSuccess = (msg: string) =>
+    toast.success(msg, {
+      position: "bottom-left",
+      duration: 2000,
+    });
+
+  const onSubmit = handleSubmit(async (dataFromForm) => {
+    if (type === "create") {
+      let response = await createParent(dataFromForm);
+      if (response.success) {
+        handleSuccess(response.message);
+        setOpen(false);
+      } else {
+        handleError(response.message);
+      }
+    } else {
+      let response = await updateParent({ id: data.id, dataFromForm });
+      if (response.success) {
+        handleSuccess(response.message);
+        setOpen(false);
+      } else {
+        handleError(response.message);
+      }
+    }
   });
+
+  const { students } = relatedData;
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -86,18 +127,18 @@ const ParentForm = ({
       </span>
       <div className="flex justify-between items-center flex-wrap gap-4">
         <InputField
-          label="Firstname"
+          label="Name"
           register={register}
-          name="firstName"
-          defaultValue={data?.firstName}
-          err={errors.firstName}
+          name="name"
+          defaultValue={data?.name}
+          err={errors.name}
         />
         <InputField
-          label="Lastname"
+          label="Surname"
           register={register}
-          name="lastName"
-          defaultValue={data?.lastName}
-          err={errors.lastName}
+          name="surname"
+          defaultValue={data?.surname}
+          err={errors.surname}
         />
         <InputField
           label="Phone"
@@ -116,15 +157,20 @@ const ParentForm = ({
 
         <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-400">Students</label>
-          <input
-            type="text"
-            {...register("students", {
-              setValueAs: (value) => value.split(",").map((t: any) => t.trim()), // Convert CSV to array
-            })}
-            defaultValue={data?.students?.join(", ")}
+          <select
+            multiple
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            placeholder="Enter students (comma-separated)"
-          />
+            {...register("students")}
+            defaultValue={data?.students}
+          >
+            {students.map((student: Student) => {
+              return (
+                <option key={student.id} value={student.id}>
+                  {student.name} {student.surname}
+                </option>
+              );
+            })}
+          </select>
         </div>
       </div>
       <button className="bg-blue-500 text-white rounded-md p-2">

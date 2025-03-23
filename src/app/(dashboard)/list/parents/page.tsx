@@ -1,10 +1,11 @@
+import FormContainer from "@/components/FormContainer";
 import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
-import { role } from "@/lib/utils";
+import { getRole } from "@/lib/utils";
 import { Parent, Prisma, Student } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
@@ -12,77 +13,82 @@ import React from "react";
 
 type parentList = Parent & { students: Student[] };
 
-const columns = [
-  {
-    header: "Info",
-    accessor: "info",
-  },
 
-  {
-    header: "Student Name",
-    accessor: "studentnames",
-    className: "hidden md:table-cell",
-  },
-
-  {
-    header: "Phone",
-    accessor: "phone",
-    className: "hidden lg:table-cell",
-  },
-
-  {
-    header: "Address",
-    accessor: "address",
-    className: "hidden lg:table-cell",
-  },
-
-  {
-    header: "Actions",
-    accessor: "actions",
-    className: `${role === "admin" ? "" : "hidden"}`,
-  },
-];
-
-const renderRow = (item: parentList) => (
-  <tr
-    key={item.id}
-    className="border-b border-gray-200 hover:bg-lamaPurpleLight even:bg-slate-50 text-sm"
-  >
-    <td>
-      <div className="flex items-center justify-start gap-4 my-2">
-        <div className="flex flex-col">
-          <h3 className="font-semibold">{item.name}</h3>
-          <p className="text-xs text-gray-500">{item.email}</p>
-        </div>
-      </div>
-    </td>
-    <td className="hidden md:table-cell mt-4">
-      {item.students
-        .map((student, indx) => {
-          return student.name;
-        })
-        .join(", ")}
-    </td>
-    <td className="hidden lg:table-cell mt-4">{item.phone}</td>
-    <td className="hidden lg:table-cell mt-4">{item.address}</td>
-    <td className="flex items-center gap-2 mt-4">
-      {role === "admin" && (
-        <>
-          <FormModal table="parent" type="update" data={item} />
-          <FormModal table="parent" type="delete" id={item.id} />
-        </>
-      )}
-    </td>
-  </tr>
-);
 
 const ParentList = async ({
   searchParams,
 }: {
   searchParams: { [key: string]: string | undefined };
 }) => {
+  const { role, currUserId } = await getRole();
   const { page, ...queryParams } = searchParams;
   const p = page ? parseInt(page) : 1;
+
+  //RenderRow and Column
+
+  const columns = [
+    {
+      header: "Info",
+      accessor: "info",
+    },
+  
+    {
+      header: "Student Name",
+      accessor: "studentnames",
+      className: "hidden md:table-cell",
+    },
+  
+    {
+      header: "Phone",
+      accessor: "phone",
+      className: "hidden lg:table-cell",
+    },
+  
+    {
+      header: "Address",
+      accessor: "address",
+      className: "hidden lg:table-cell",
+    },
+  
+    {
+      header: "Actions",
+      accessor: "actions",
+      className: `${role === "admin" ? "" : "hidden"}`,
+    },
+  ];
+  
+  const renderRow = (item: parentList) => (
+    <tr
+      key={item.id}
+      className="border-b border-gray-200 hover:bg-lamaPurpleLight even:bg-slate-50 text-sm"
+    >
+      <td>
+        <div className="flex items-center justify-start gap-4 my-2">
+          <div className="flex flex-col">
+            <h3 className="font-semibold">{item.name}</h3>
+            <p className="text-xs text-gray-500">{item.email}</p>
+          </div>
+        </div>
+      </td>
+      <td className="hidden md:table-cell mt-4">
+        {item.students
+          .map((student, indx) => {
+            return student.name;
+          })
+          .join(", ")}
+      </td>
+      <td className="hidden lg:table-cell mt-4">{item.phone}</td>
+      <td className="hidden lg:table-cell mt-4">{item.address}</td>
+      <td className="flex items-center gap-2 mt-4">
+        {role === "admin" && (
+          <>
+            <FormContainer table="parent" type="update" data={item} />
+            <FormContainer table="parent" type="delete" id={item.id} />
+          </>
+        )}
+      </td>
+    </tr>
+  );
 
   //URL PARAMS CONDITIONS
 
@@ -130,7 +136,7 @@ const ParentList = async ({
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow hover:bg-lamaPurple">
               <Image src={"/sort.png"} alt="fltr" width={14} height={14} />
             </button>
-            {role === "admin" && <FormModal table="parent" type="create" />}
+            {role === "admin" && <FormContainer table="parent" type="create" />}
           </div>
         </div>
       </div>

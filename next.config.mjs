@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images:{
-        remotePatterns:[{hostname:"images.pexels.com"},{hostname:"www.istockphoto.com"}],
+        remotePatterns:[{hostname:"res.cloudinary.com"},{hostname:"images.pexels.com"}],
     }
 };
 

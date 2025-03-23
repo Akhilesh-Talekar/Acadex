@@ -16,7 +16,8 @@ declare interface formDataProps {
     table: 'teacher' | 'student' | 'class' | 'subject' | 'parent' | 'lesson' | 'exam' | 'assignment' | 'result' | 'attendance' | 'event' | 'announcement';
     type: 'create' | 'update' | 'delete';
     data?: any;
-    id?: String | Number;
+    id?: string | Number;
+    relatedData?: any;
 }
 
 declare interface TeacherFormProps {

@@ -32,7 +32,7 @@ const BigCalanderContainer = async({type, id}:{type: "teacherId" | "classId", id
 
   return (
     
-    <div>
+    <div className='w-full h-full'>
       <BigCalendar data={schedule}/>
     </div>
   )
