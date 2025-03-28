@@ -4,21 +4,21 @@ import React, { PureComponent } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 
-const data = [
-  { range: "0-10", frequency: 1 },
-  { range: "11-20", frequency: 3 },
-  { range: "21-30", frequency: 5 },
-  { range: "31-40", frequency: 8 },
-  { range: "41-50", frequency: 12 },
-  { range: "51-60", frequency: 18 },
-  { range: "61-70", frequency: 24 },
-  { range: "71-80", frequency: 30 },
-  { range: "81-90", frequency: 25 },
-  { range: "91-100", frequency: 20 },
-];
+// const data = [
+//   { range: "0-10", frequency: 1 },
+//   { range: "11-20", frequency: 3 },
+//   { range: "21-30", frequency: 5 },
+//   { range: "31-40", frequency: 8 },
+//   { range: "41-50", frequency: 12 },
+//   { range: "51-60", frequency: 18 },
+//   { range: "61-70", frequency: 24 },
+//   { range: "71-80", frequency: 30 },
+//   { range: "81-90", frequency: 25 },
+//   { range: "91-100", frequency: 20 },
+// ];
 
 
-const ResultGraph = () => {
+const ResultGraph = ({data}:{data:any[]}) => {
   return (
     <ResponsiveContainer width="100%" height="90%">
       <AreaChart

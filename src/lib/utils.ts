@@ -64,3 +64,8 @@ export const adjustScheduleTOCurrentWeek = (
     };
   });
 };
+
+
+export function getRandomInRange({min, max}: {min: number, max: number}) {
+  return Math.floor(Math.random() * (max - min) + min) + 1;
+}

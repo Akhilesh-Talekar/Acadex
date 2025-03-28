@@ -2,14 +2,14 @@
 import React, { PureComponent } from "react";
 import { PieChart, Pie, Sector, Cell, ResponsiveContainer } from "recharts";
 
-const data = [
-  { name: "Pass", value: 86 },
-  { name: "Fail", value: 14 },
-];
+// const data = [
+//   { name: "Pass", value: 86 },
+//   { name: "Fail", value: 14 },
+// ];
 
 const COLORS = ["#c7f5a9", "#f5a9a9"];
 
-const ResultPie = () => {
+const ResultPie = ({data}: {data:any[]}) => {
   return (
     <ResponsiveContainer width="100%" height="75%">
       <PieChart width={400} height={400}>

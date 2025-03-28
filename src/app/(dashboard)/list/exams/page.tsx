@@ -1,3 +1,4 @@
+import FormContainer from "@/components/FormContainer";
 import FormModal from "@/components/FormModal";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
@@ -48,6 +49,12 @@ const LessonList = async({searchParams}: {searchParams:{[key:string]:string | un
       accessor: "date",
       className: "hidden md:table-cell",
     },
+
+    {
+      header: "Start Time",
+      accessor: "startTime",
+      className: "hidden md:table-cell",
+    },
   
     {
       header: "Actions",
@@ -71,11 +78,12 @@ const LessonList = async({searchParams}: {searchParams:{[key:string]:string | un
       <td className="mt-4">{item.lesson.class.name}</td>
       <td className="hidden md:table-cell mt-4">{item.lesson.teacher.name}</td>
       <td className="hidden md:table-cell mt-4">{new Intl.DateTimeFormat("en-IN").format(item.startTime)}</td>
+      <td className="hidden md:table-cell mt-4">{new Intl.DateTimeFormat("en-IN",{hour:"2-digit", minute:"2-digit", hour12:true}).format(item.startTime)}</td>
       <td className="flex items-center gap-2 my-2">
         {(role === "admin" || role === "teacher") && (
           <>
-            <FormModal table="exam" type="update" data={item} />
-            <FormModal table="exam" type="delete" id={item.id} />
+            <FormContainer table="exam" type="update" data={item} />
+            <FormContainer table="exam" type="delete" id={item.id} />
           </>
         )}
       </td>
@@ -159,6 +167,7 @@ const LessonList = async({searchParams}: {searchParams:{[key:string]:string | un
             teacher: true,
             class: {
               select: {
+                name: true,
                 students: {
                   select: {
                     id: true,
@@ -191,7 +200,7 @@ const LessonList = async({searchParams}: {searchParams:{[key:string]:string | un
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow hover:bg-lamaPurple">
               <Image src={"/sort.png"} alt="fltr" width={14} height={14} />
             </button>
-            {(role === "admin" || role === "teacher")  && <FormModal table="exam" type="create" />}
+            {(role === "admin" || role === "teacher")  && <FormContainer table="exam" type="create" />}
           </div>
         </div>
       </div>

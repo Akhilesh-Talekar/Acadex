@@ -4,7 +4,7 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { formDataProps } from "../../types";
 import dynamic from "next/dynamic";
-import { deleteClass, deleteParent, deleteStudent, deleteSubject, deleteTeacher } from "@/lib/actions";
+import { deleteAnnouncement, deleteAssignment, deleteAttendance, deleteClass, deleteEvent, deleteExam, deleteLesson, deleteParent, deleteResult, deleteStudent, deleteSubject, deleteTeacher } from "@/lib/actions";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
@@ -52,18 +52,23 @@ const AnnouncementForm = dynamic(() => import ("./forms/AnnounementForm"),{
   loading: () => <h1>Loading...</h1>
 })
 
+const AttendanceForm = dynamic(() => import ("./forms/AttendanceForm"),{
+  loading: () => <h1>Loading...</h1>
+})
+
 const deleteActionMap:{[key:string]: (id:Number | String) => Promise<any>} = {
   teacher:(id) => deleteTeacher(String(id)),
   student:(id) => deleteStudent(String(id)),
   parent:(id) => deleteParent(String(id)),
   subject:(id) => deleteSubject(Number(id)),
   class:(id) => deleteClass(Number(id)),
-  lesson:(id) => deleteLesson(id),
-  exam:(id) => deleteExam(id),
-  assignment:(id) => deleteAssignment(id),
-  result:(id) => deleteResult(id),
-  event:(id) => deleteEvent(id),
-  announcement:(id) => deleteAnnouncement(id),
+  lesson:(id) => deleteLesson(Number(id)),
+  exam:(id) => deleteExam(Number(id)),
+  assignment:(id) => deleteAssignment(Number(id)),
+  result:(id) => deleteResult(Number(id)),
+  event:(id) => deleteEvent(Number(id)),
+  announcement:(id) => deleteAnnouncement(Number(id)),
+  attendance:(id) => deleteAttendance(Number(id)),
 };
 
 const routMap = {
@@ -78,6 +83,7 @@ const routMap = {
   result: "/list/results",
   event: "/list/events",
   announcement: "/list/announcements",
+  attendance: "/list/attendance",
 }
 
 
@@ -95,6 +101,7 @@ const forms: {
   result: (setOpen, type, data, relatedData) => <ResultForm type={type} data={data} setOpen={setOpen} relatedData = {relatedData}/>,
   event: (setOpen, type, data, relatedData) => <EventForm type={type} data={data} setOpen={setOpen} relatedData = {relatedData}/>,
   announcement: (setOpen, type, data, relatedData) => <AnnouncementForm type={type} data={data} setOpen={setOpen} relatedData = {relatedData}/>,
+  attendance: (setOpen, type, data, relatedData) => <AttendanceForm type={type} data={data} setOpen={setOpen} relatedData = {relatedData}/>,
 };
 
 const FormModal = ({ table, type, data, id, relatedData }: formDataProps) => {

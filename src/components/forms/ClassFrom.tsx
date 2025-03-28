@@ -20,9 +20,7 @@ const classSchema = z.object({
     .max(500, { message: "Capacity cannot exceed 500!" }),
 
   gradeId: z.coerce
-    .number()
-    .min(1, { message: "Grade is required!" })
-    .max(12, { message: "Grade cannot exceed 10 characters!" }),
+    .number(),
 
   supervisorId: z.coerce
     .string()

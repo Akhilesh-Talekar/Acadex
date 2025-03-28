@@ -32,13 +32,14 @@ const EventList = async ({ dateParam }: { dateParam: string | undefined }) => {
     default:
       break;
   }
+  
 
   const data = await prisma.event.findMany({
     where: {
       startTime: {
         gte: startOfDay,
         lte: endOfDay,
-      },
+      }, 
       ...(roleConditions.length > 0 ? { OR: roleConditions } : {}),
     },
   });

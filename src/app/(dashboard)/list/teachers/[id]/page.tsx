@@ -1,6 +1,7 @@
 import Announcement from "@/components/Announcement";
 import BigCalanderContainer from "@/components/BigCalanderContainer";
 import FormContainer from "@/components/FormContainer";
+import PerformanceContainer from "@/components/PerformanceContainer";
 import Preformance from "@/components/Preformance";
 import prisma from "@/lib/prisma";
 import { getRole } from "@/lib/utils";
@@ -179,7 +180,7 @@ const SingleTeacherPage = async ({
             </Link>
           </div>
         </div>
-        <Preformance />
+        <PerformanceContainer type="teacher" id={teacher.id}/>
         <Announcement />
       </div>
     </div>

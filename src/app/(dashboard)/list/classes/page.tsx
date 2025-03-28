@@ -64,7 +64,7 @@ const ClassList = async({searchParams}: {searchParams:{[key:string]:string | und
       </td>
       <td className="hidden md:table-cell mt-4">{item.capacity}</td>
       <td className="hidden md:table-cell mt-4">{item.grade.level}</td>
-      <td className="hidden md:table-cell mt-4">{item.supervisor.name + " " + item.supervisor.surname}</td>
+      <td className="hidden md:table-cell mt-4">{item.supervisor ? item.supervisor?.name + " " + item.supervisor?.surname : "-"}</td>
       <td className="flex items-center gap-2 my-2">
   
         {role === "admin" && (

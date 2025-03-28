@@ -63,17 +63,17 @@ const StudentForm = ({
   const [img, setImg] = useState<any>();
 
   const handleError = (err: string) =>
-      toast.error(err, {
-        position: "bottom-left",
-      });
-  
-    const handleSuccess = (msg: string) =>
-      toast.success(msg, {
-        position: "bottom-left",
-        duration: 2000,
-      });
+    toast.error(err, {
+      position: "bottom-left",
+    });
 
-  const onSubmit = handleSubmit(async(dataFromForm) => {
+  const handleSuccess = (msg: string) =>
+    toast.success(msg, {
+      position: "bottom-left",
+      duration: 2000,
+    });
+
+  const onSubmit = handleSubmit(async (dataFromForm) => {
     if (type === "create") {
       let response = await createStudent({
         ...dataFromForm,
@@ -231,10 +231,11 @@ const StudentForm = ({
             {...register("classId")}
             defaultValue={data?.classId}
           >
-            {classes.map((classs:any) => {
+            {classes.map((classs: any) => {
               return (
                 <option key={classs.id} value={classs.id}>
-                  {classs.grade.level} {classs.name} - {classs._count.students}/{classs.capacity} Capacity
+                  {classs.grade.level} {classs.name} - {classs._count.students}/
+                  {classs.capacity} Capacity
                 </option>
               );
             })}

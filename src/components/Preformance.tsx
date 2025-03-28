@@ -1,14 +1,23 @@
 "use client";
+import { getRandomInRange } from "@/lib/utils";
 import Image from "next/image";
-import React, { PureComponent } from "react";
+import React, { PureComponent, useState } from "react";
 import { PieChart, Pie, Sector, Cell, ResponsiveContainer } from "recharts";
 
-const data = [
-  { name: "Group A", value: 92, fill: "#C3EBFA" },
-  { name: "Group B", value: 8, fill: "#FAE27C" },
-];
 
-const Preformance = () => {
+
+const Preformance = ({data, random}:{data:any[], random:number}) => {
+
+
+  const defaultData = [
+    { name: "Group A", value: random, fill: "#C3EBFA" },
+    { name: "Group B", value: 100 - random, fill: "#FAE27C" },
+  ];
+
+  let finalData = data.length > 0 ? data : defaultData;
+
+  
+
   return (
     <div className="bg-white p-4 rounded-md h-80 relative">
       <div className="flex justify-between items-center">
@@ -21,7 +30,7 @@ const Preformance = () => {
             dataKey="value"
             startAngle={180}
             endAngle={0}
-            data={data}
+            data={finalData}
             cx="50%"
             cy="50%"
             innerRadius={70}
@@ -30,8 +39,8 @@ const Preformance = () => {
         </PieChart>
       </ResponsiveContainer>
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-        <h1 className="text-3xl font-bold">9.2</h1>
-        <p className="text-sm text-gray-400">of 10 max LTS</p>
+        <h1 className="text-3xl font-bold">{finalData[0]?.value}</h1>
+        <p className="text-sm text-gray-400">of 100 max LTS</p>
       </div>
       <h1 className="font-medium absolute bottom-16 left-0 right-0 m-auto text-center">1st Semester - 2nd Semester</h1>
     </div>
