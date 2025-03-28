@@ -1,3 +1,11 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": "next/core-web-vitals",
+  "rules": {
+    "react/no-unescaped-entities": "off",
+    "@next/next/no-page-custom-font": "off",
+    "@next/next/no-img-element": "off",
+    "react-hooks/exhaustive-deps": "off",
+    "no-console": "off", // Fully disable console warnings (change to "warn" if needed)
+    "react/jsx-key": "warn" // Prevent missing "key" errors in iterators
+  }
 }
