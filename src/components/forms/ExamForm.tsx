@@ -57,7 +57,7 @@ const examSchema = z.object({
     )
     .refine((val) => val !== undefined, { message: "End minute is required" }),
 
-  lessonId: z.coerce.number(),
+  lessonId: z.coerce.number().min(1, { message: "Lesson is required" }),
 });
 
 export type ExamSchema = z.infer<typeof examSchema>;
@@ -234,12 +234,13 @@ const ExamForm = ({
         </div>
 
         <div className="flex justify-center items-center flex-col w-full">
-          <label className="text-xs text-gray-400">Grade</label>
+          <label className="text-xs text-gray-400">Lesson</label>
           <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full mt-1"
             {...register("lessonId")}
             defaultValue={data?.lessonId}
           >
+            <option value="" className="text-center">Select Lesson</option>
             {lessons.map((lesson: any) => {
               return (
                 <option key={lesson.id} value={lesson.id}>

@@ -2,9 +2,11 @@ import React from "react";
 import { formDataProps } from "../../types";
 import FormModal from "./FormModal";
 import prisma from "@/lib/prisma";
+import { getRole } from "@/lib/utils";
 
 const FormContainer = async ({ table, type, data, id }: formDataProps) => {
   let relatedData = {};
+  let {role, currUserId} = await getRole();
 
   if (type !== "delete") {
     switch (table) {
@@ -88,6 +90,9 @@ const FormContainer = async ({ table, type, data, id }: formDataProps) => {
 
       case "exam":
         const examLessons = await prisma.lesson.findMany({
+          where:{
+            ...(role === "teacher" ? {teacherId: String(currUserId)} : {})
+          },
           select:{
             id:true,
             name:true,
@@ -113,6 +118,9 @@ const FormContainer = async ({ table, type, data, id }: formDataProps) => {
 
       case "assignment":
         const assignmentLessons = await prisma.lesson.findMany({
+          where:{
+            ...(role === "teacher" ? {teacherId: String(currUserId)} : {})
+          },
           select:{
             id:true,
             name:true,
@@ -224,6 +232,11 @@ const FormContainer = async ({ table, type, data, id }: formDataProps) => {
 
       case "result":
         const resultExamData = await prisma.exam.findMany({
+          where: {
+            ...(role === "teacher" ? {lesson:{
+              teacherId: String(currUserId)
+            }} : {})
+          },
           select:{
             id:true,
             title:true,
@@ -240,6 +253,11 @@ const FormContainer = async ({ table, type, data, id }: formDataProps) => {
         })
 
         const resultAssignmentData = await prisma.assignment.findMany({
+          where:{
+            ...(role === "teacher" ? {lesson:{
+              teacherId: String(currUserId)
+            }} : {})
+          },
           select:{
             id:true,
             title:true,

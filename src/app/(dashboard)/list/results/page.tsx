@@ -408,13 +408,13 @@ const ResultList = async ({
               <div className="flex flex-col items-center">
                 <div className="w-5 h-5 rounded-full bg-[#c7f5a9]" />
                 <h2 className="text-xl font-semibold">Pass</h2>
-                <h2 className="text-s font-semibold">{Math.round(passPercentage)}%</h2>
+                <h2 className="text-s font-semibold">{Math.round(passPercentage) || 0}%</h2>
               </div>
 
               <div className="flex flex-col items-center">
                 <div className="w-5 h-5 rounded-full bg-[#f5a9a9]" />
                 <h2 className="text-xl font-semibold">Fail</h2>
-                <h2 className="text-s font-semibold">{Math.round(failPercentage)}%</h2>
+                <h2 className="text-s font-semibold">{Math.round(failPercentage) || 0}%</h2>
               </div>
             </div>
           </div>
