@@ -60,7 +60,7 @@ const StudentForm = ({
     resolver: zodResolver(studentSchema),
   });
 
-  const [img, setImg] = useState<any>();
+  const [img, setImg] = useState<any>(null);
 
   const handleError = (err: string) =>
     toast.error(err, {
@@ -172,13 +172,28 @@ const StudentForm = ({
           defaultValue={data?.bloodType}
           err={errors.bloodType}
         />
-        <InputField
-          label="Parent"
-          register={register}
-          name="parentId"
-          defaultValue={data?.parentId}
-          err={errors.parentId}
-        />
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <label className="text-xs text-gray-400">Parent</label>
+          <select
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            {...register("parentId")}
+            defaultValue={data?.parentId}
+          >
+            <option value="">Select a parent</option>
+            {relatedData?.parents.map((parent: any) => {
+              return (
+                <option key={parent.id} value={parent.id}>
+                  {parent.name} {parent.surname}
+                </option>
+              );
+            })}
+          </select>
+          {errors.sex?.message && (
+            <p className="text-xs text-red-500">
+              {errors.sex?.message.toString()}
+            </p>
+          )}
+        </div>
         <InputField
           label="DateOfBirth"
           register={register}
@@ -246,30 +261,34 @@ const StudentForm = ({
             </p>
           )}
         </div>
-        <CldUploadWidget
-          uploadPreset="acadex"
-          onSuccess={(res, { widget }) => {
-            setImg(res.info);
-            widget.close();
-          }}
-        >
-          {({ open }) => {
-            return (
-              <div
-                className="text-xs text-gray-400 flex items-center gap-2 cursor-pointer"
-                onClick={() => open()}
-              >
-                <Image
-                  src={"/upload.png"}
-                  alt="upload"
-                  width={28}
-                  height={28}
-                />
-                <span>Upload a photo</span>
-              </div>
-            );
-          }}
-        </CldUploadWidget>
+        {img ? (
+          <Image src={`${img.secure_url}`} height={60} width={60} alt="img" className="mx-4"></Image>
+        ) : (
+          <CldUploadWidget
+            uploadPreset="acadex"
+            onSuccess={(res, { widget }) => {
+              setImg(res.info);
+              widget.close();
+            }}
+          >
+            {({ open }) => {
+              return (
+                <div
+                  className="text-xs text-gray-400 flex items-center gap-2 cursor-pointer"
+                  onClick={() => open()}
+                >
+                  <Image
+                    src={"/upload.png"}
+                    alt="upload"
+                    width={28}
+                    height={28}
+                  />
+                  <span>Upload a photo</span>
+                </div>
+              );
+            }}
+          </CldUploadWidget>
+        )}
       </div>
       <button className="bg-blue-500 text-white rounded-md p-2">
         {type == "create" ? "Register" : "Update"}

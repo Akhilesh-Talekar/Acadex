@@ -93,7 +93,7 @@ const SingleTeacherPage = async ({
 
           {/* OTHER CARDS */}
           <div className="flex-1 flex gap-4 justify-between flex-wrap">
-            <div className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] lg:w-[45%] xl:w-[45%] 2xl:w-[48%]">
+            <div className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] lg:w-[45%] xl:w-[45%] 2xl:w-[46%]">
               <Image
                 src={"/singleAttendance.png"}
                 alt="Attendance"
@@ -107,7 +107,7 @@ const SingleTeacherPage = async ({
               </div>
             </div>
 
-            <div className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] lg:w-[45%] xl:w-[45%] 2xl:w-[48%]">
+            <div className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] lg:w-[45%] xl:w-[45%] 2xl:w-[46%]">
               <Image
                 src={"/singleClass.png"}
                 alt="Attendance"
@@ -121,7 +121,7 @@ const SingleTeacherPage = async ({
               </div>
             </div>
 
-            <div className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] lg:w-[45%] xl:w-[45%] 2xl:w-[48%]">
+            <div className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] lg:w-[45%] xl:w-[45%] 2xl:w-[46%]">
               <Image
                 src={"/singleLesson.png"}
                 alt="Attendance"
@@ -135,7 +135,7 @@ const SingleTeacherPage = async ({
               </div>
             </div>
 
-            <div className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] lg:w-[45%] xl:w-[45%] 2xl:w-[48%]">
+            <div className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] lg:w-[45%] xl:w-[45%] 2xl:w-[46%]">
               <Image
                 src={"/singleBranch.png"}
                 alt="Attendance"
