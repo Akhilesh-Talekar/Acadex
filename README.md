@@ -1,26 +1,30 @@
-# AcadeX
+# 🎓 Acadex - The Ultimate School ERP
 
-## Getting Started
+Acadex is a **powerful, role-based school management system** designed for **teachers, students, and parents**. With **secure authentication, role-based dashboards, attendance tracking, lesson scheduling, and detailed analytics**, it simplifies school operations and enhances productivity.
 
-First, run the development server:
+## 🚀 Features
+- **Role-Based Dashboards** – Separate access for students, teachers, and parents.
+- **Authentication & Authorization** – Secure login system with Clerk.
+- **Event & Announcement Management** – Global and class-specific updates.
+- **Attendance Tracking** – Students & parents track their own, teachers track class-wide.
+- **Lesson & Exam Scheduling** – Organized curriculum planning.
+- **Results & Analytics** – Beautiful statistical insights for student performance.
+- **Deep Data Connectivity** – Everything is **interlinked** for better tracking.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🛠️ Tech Stack
+- **Frontend**: Next.js, TailwindCSS
+- **Backend**: PostgreSQL, Prisma
+- **Cloud**: Neon (DB), Cloudinary (Storage)
+- **Auth**: Clerk (RBAC)
+- **Validation**: Zod, React Hook Form
+- **Security**: Middleware for route protection
+- **Schema Visualization**: Eraser.io
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🎯 Live Demo & Resources
+- 🌐 **Live Demo**: acadeex.vercel.app
+- 📜 **Database Schema (Eraser.io)**: https://app.eraser.io/workspace/Uu4K3UyIkvzJCAwUzWi7
+- 📝 **Documentation**: [Your Docs Link]
+- 💻 **GitHub Repository**: [Your GitHub Repo Link]
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Lama Dev Youtube Channel](https://youtube.com/lamadev) 
-- [Next.js](https://nextjs.org/learn)
+### 📬 Contact & Feedback
+Have ideas or feedback? Feel free to connect and discuss! Let's revolutionize **school management** together. 🚀
