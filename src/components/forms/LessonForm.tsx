@@ -14,49 +14,8 @@ const lessonSchema = z.object({
     .min(3, { message: "Subject name must be at least 3 characters long!" })
     .max(20, { message: "Subject name must be at most 50 characters long!" }),
 
-  date: z.coerce.date(),
-
-  startHour: z
-    .preprocess(
-      (val) => (val === "" ? undefined : Number(val)),
-      z
-        .number()
-        .min(0, { message: "Start hour must be between 0 and 23" })
-        .max(23, { message: "Start hour must be between 0 and 23" })
-    )
-    .refine((val) => val !== undefined, { message: "Start hour is required" }),
-
-  startMin: z
-    .preprocess(
-      (val) => (val === "" ? undefined : Number(val)),
-      z
-        .number()
-        .min(0, { message: "Start minute must be between 0 and 59" })
-        .max(59, { message: "Start minute must be between 0 and 59" })
-    )
-    .refine((val) => val !== undefined, {
-      message: "Start minute is required",
-    }),
-
-  endHour: z
-    .preprocess(
-      (val) => (val === "" ? undefined : Number(val)),
-      z
-        .number()
-        .min(0, { message: "End hour must be between 0 and 23" })
-        .max(23, { message: "End hour must be between 0 and 23" })
-    )
-    .refine((val) => val !== undefined, { message: "End hour is required" }),
-
-  endMin: z
-    .preprocess(
-      (val) => (val === "" ? undefined : Number(val)),
-      z
-        .number()
-        .min(0, { message: "End minute must be between 0 and 59" })
-        .max(59, { message: "End minute must be between 0 and 59" })
-    )
-    .refine((val) => val !== undefined, { message: "End minute is required" }),
+  startDate: z.coerce.date(),
+  endDate: z.coerce.date(),
 
   subjectId: z.coerce.number(),
 
@@ -78,6 +37,7 @@ const LessonForm = ({
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   relatedData?: any;
 }) => {
+  console.log(data);
   const {
     register,
     handleSubmit,
@@ -113,7 +73,7 @@ const LessonForm = ({
       duration: 2000,
     });
 
-  const onSubmit = handleSubmit(async(dataFromForm) => {
+  const onSubmit = handleSubmit(async (dataFromForm) => {
     if (type === "create") {
       let response = await createLesson(dataFromForm);
       if (response.success) {
@@ -142,7 +102,7 @@ const LessonForm = ({
       </h1>
 
       <div className="flex justify-between flex-wrap gap-4">
-        <div className="flex flex-col gap-2 w-full md:w-[45%]">
+        <div className="flex flex-col gap-2 w-full">
           <label className="text-xs text-gray-400">Lesson</label>
           <input
             type={"text"}
@@ -159,101 +119,44 @@ const LessonForm = ({
 
         <div className="flex flex-col gap-2 w-full md:w-[45%]">
           <label className="text-xs text-gray-400">
-            Date{" "}
-            <span className="text-[9px]">(Select keeping day as priority)</span>
+            <span className="text-[9px]">Start Time</span>
           </label>
           <input
-            type={"date"}
-            {...register("date")}
+            type={"datetime-local"}
+            {...register("startDate")}
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            defaultValue={data?.startTime.toISOString().split("T")[0]}
+            defaultValue={data?.startTime
+              ? new Date(new Date(data.startTime).getTime() - new Date().getTimezoneOffset() * 60000)
+                  .toISOString()
+                  .slice(0, 16)
+              : ""}
           />
-          {errors.date?.message && (
+          {errors.startDate?.message && (
             <p className="text-xs text-red-500">
-              {errors.date?.message.toString()}
+              {errors.startDate?.message.toString()}
             </p>
           )}
         </div>
-        <div className="flex flex-col gap-2 w-full md:w-[45%]">
-          <span className="text-xs text-gray-400">Start Time</span>
-          <div className="flex justify-between items-center bg-gray-200 gap-2 p-2 rounded-md">
-            <div className="flex flex-col items-center">
-              <label className="text-xs text-gray-400">Start Hour</label>
-              <input
-                {...register("startHour")}
-                className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-[80%]"
-                defaultValue={Intl.DateTimeFormat("en-IN", {
-                  hour: "2-digit",
-                  hour12: false,
-                }).format(data?.startTime)}
-              />
-              {errors.startHour?.message && (
-                <p className="text-xs text-red-500">
-                  {errors.startHour?.message.toString()}
-                </p>
-              )}
-            </div>
-
-            <span className="text-xl font-bold">:</span>
-
-            <div className="flex flex-col items-center">
-              <label className="text-xs text-gray-400">Start Min</label>
-              <input
-                {...register("startMin")}
-                className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-[80%]"
-                defaultValue={Intl.DateTimeFormat("en-IN", {
-                  minute: "2-digit",
-                  hour12: false,
-                }).format(data?.startTime)}
-              />
-              {errors.startMin?.message && (
-                <p className="text-xs text-red-500">
-                  {errors.startMin?.message.toString()}
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
 
         <div className="flex flex-col gap-2 w-full md:w-[45%]">
-          <span className="text-xs text-gray-400">End Time</span>
-          <div className="flex justify-between items-center bg-gray-200 gap-2 p-2 rounded-md">
-            <div className="flex flex-col items-center">
-              <label className="text-xs text-gray-400">End Hour</label>
-              <input
-                {...register("endHour")}
-                className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-[80%]"
-                defaultValue={Intl.DateTimeFormat("en-IN", {
-                  hour: "2-digit",
-                  hour12: false,
-                }).format(data?.endTime)}
-              />
-              {errors.endHour?.message && (
-                <p className="text-xs text-red-500">
-                  {errors.endHour?.message.toString()}
-                </p>
-              )}
-            </div>
-
-            <span className="text-xl font-bold">:</span>
-
-            <div className="flex flex-col items-center">
-              <label className="text-xs text-gray-400">End Min</label>
-              <input
-                {...register("endMin")}
-                className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-[80%]"
-                defaultValue={Intl.DateTimeFormat("en-IN", {
-                  minute: "2-digit",
-                  hour12: false,
-                }).format(data?.endTime)}
-              />
-              {errors.endMin?.message && (
-                <p className="text-xs text-red-500">
-                  {errors.endMin?.message.toString()}
-                </p>
-              )}
-            </div>
-          </div>
+          <label className="text-xs text-gray-400">
+            <span className="text-[9px]">End Time</span>
+          </label>
+          <input
+            type={"datetime-local"}
+            {...register("endDate")}
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            defaultValue={data?.endTime
+              ? new Date(new Date(data.endTime).getTime() - new Date().getTimezoneOffset() * 60000)
+                  .toISOString()
+                  .slice(0, 16)
+              : ""}
+          />
+          {errors.endDate?.message && (
+            <p className="text-xs text-red-500">
+              {errors.endDate?.message.toString()}
+            </p>
+          )}
         </div>
 
         <div className="flex justify-center gap-2 flex-col w-full md:w-[45%]">

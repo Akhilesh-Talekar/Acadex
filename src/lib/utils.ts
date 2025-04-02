@@ -18,13 +18,13 @@ const currentWorkWeek = () => {
   const startOfWeek = new Date(today);
 
   if (day === 0) {
-    startOfWeek.setDate(today.getDate() + 1);
+    startOfWeek.setUTCDate(today.getDate() + 1);
   }
 
   if (day === 6) {
-    startOfWeek.setDate(today.getDate() + 2);
+    startOfWeek.setUTCDate(today.getDate() + 2);
   } else {
-    startOfWeek.setDate(today.getDate() - (day - 1));
+    startOfWeek.setUTCDate(today.getDate() - (day - 1));
   }
   startOfWeek.setHours(0, 0, 0, 0);
 
@@ -32,25 +32,27 @@ const currentWorkWeek = () => {
 };
 
 export const adjustScheduleTOCurrentWeek = (
-  lesson: { title: string; start: Date; end: Date }[]
+  lessons: { title: string; start: Date; end: Date }[]
 ): { title: string; start: Date; end: Date }[] => {
-  const startOfWeek = currentWorkWeek();
-  return lesson.map((lesson) => {
+  const startOfWeek = currentWorkWeek(); 
+
+  return lessons.map((lesson) => {
     const lessonDayOfWeek = lesson.start.getDay();
+    const daysFromMonday = lessonDayOfWeek === 0 ? 6 : lessonDayOfWeek - 1; // Adjust Sunday (0) to be last
 
-    const daysFromMonday = lessonDayOfWeek === 0 ? 6 : lessonDayOfWeek - 1;
-
-    const adjustStartDate = new Date(startOfWeek);
-    adjustStartDate.setDate(startOfWeek.getDate() + daysFromMonday);
-    adjustStartDate.setHours(
+    // Adjusted start date
+    const adjustedStartDate = new Date(startOfWeek); // Force UTC
+    adjustedStartDate.setDate(startOfWeek.getDate() + daysFromMonday);
+    adjustedStartDate.setHours(
       lesson.start.getHours(),
-      lesson.start.getMinutes(),
+      lesson.start.getUTCMinutes(),
       lesson.start.getSeconds(),
       lesson.start.getMilliseconds()
     );
 
-    const adjustEndDate = new Date(adjustStartDate);
-    adjustEndDate.setHours(
+    // Adjusted end date
+    const adjustedEndDate = new Date(adjustedStartDate); // Force UTC
+    adjustedEndDate.setHours(
       lesson.end.getHours(),
       lesson.end.getMinutes(),
       lesson.end.getSeconds(),
@@ -59,11 +61,13 @@ export const adjustScheduleTOCurrentWeek = (
 
     return {
       title: lesson.title,
-      start: adjustStartDate,
-      end: adjustEndDate,
+      start: adjustedStartDate,
+      end: adjustedEndDate,
     };
   });
 };
+
+
 
 
 export function getRandomInRange({min, max}: {min: number, max: number}) {

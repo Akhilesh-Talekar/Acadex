@@ -126,7 +126,7 @@ const EventForm = ({
 
       <div className="flex justify-between items-center flex-wrap gap-4">
         <div className="flex flex-col gap-2 w-full md:w-[45%]">
-          <label className="text-xs text-gray-400">Title of Exam</label>
+          <label className="text-xs text-gray-400">Title of Event</label>
           <input
             type={"text"}
             {...register("title")}
@@ -141,7 +141,7 @@ const EventForm = ({
         </div>
 
         <div className="flex flex-col gap-2 w-full md:w-[45%]">
-          <label className="text-xs text-gray-400">Date of Exam</label>
+          <label className="text-xs text-gray-400">Date of Event</label>
           <input
             type={"date"}
             {...register("date")}

@@ -162,6 +162,7 @@ const ExamForm = ({
                 defaultValue={Intl.DateTimeFormat("en-IN", {
                   hour: "2-digit",
                   hour12: false,
+                  timeZone: "UTC",
                 }).format(data?.startTime)}
               />
               {errors.startHour?.message && (
@@ -181,6 +182,7 @@ const ExamForm = ({
                 defaultValue={Intl.DateTimeFormat("en-IN", {
                   minute: "2-digit",
                   hour12: false,
+                  timeZone: "UTC",
                 }).format(data?.startTime)}
               />
               {errors.startMin?.message && (
@@ -203,7 +205,8 @@ const ExamForm = ({
                 defaultValue={Intl.DateTimeFormat("en-IN", {
                   hour: "2-digit",
                   hour12: false,
-                }).format(data?.startTime)}
+                  timeZone: "UTC",
+                }).format(data?.endTime)}
               />
               {errors.endHour?.message && (
                 <p className="text-xs text-red-500">
@@ -222,7 +225,8 @@ const ExamForm = ({
                 defaultValue={Intl.DateTimeFormat("en-IN", {
                   minute: "2-digit",
                   hour12: false,
-                }).format(data?.startTime)}
+                  timeZone: "UTC",
+                }).format(data?.endTime)}
               />
               {errors.endMin?.message && (
                 <p className="text-xs text-red-500">

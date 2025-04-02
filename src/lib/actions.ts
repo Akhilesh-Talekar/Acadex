@@ -823,7 +823,7 @@ export const createLesson = async (dataFromForm: LessonSchema) => {
       THURSDAY = "THURSDAY",
       FRIDAY = "FRIDAY",
     }
-    let lessonStart = new Date(dataFromForm.date);
+    let lessonStart = new Date(dataFromForm.startDate);
     // Mapping JavaScript's getDay() output (0-6) to Weekday enum
     const dayMap: { [key: number]: Weekday } = {
       1: Weekday.MONDAY,
@@ -835,26 +835,13 @@ export const createLesson = async (dataFromForm: LessonSchema) => {
 
     const dayOfWeek = lessonStart.getDay(); // Returns a number (0 = Sunday, 1 = Monday, etc.)
     const weekday = dayMap[dayOfWeek] || null; // Get corresponding enum value
-    let lessonEnd = new Date(dataFromForm.date);
-    lessonStart.setHours(
-      Number(dataFromForm.startHour),
-      Number(dataFromForm.startMin),
-      0,
-      0
-    );
-    lessonEnd.setHours(
-      Number(dataFromForm.endHour),
-      Number(dataFromForm.startMin),
-      0,
-      0
-    );
 
     await prisma.lesson.create({
       data: {
         name: dataFromForm.name,
         day: weekday,
-        startTime: lessonStart,
-        endTime: lessonEnd,
+        startTime: dataFromForm.startDate,
+        endTime: dataFromForm.endDate,
         teacherId: dataFromForm.teacherId,
         subjectId: dataFromForm.subjectId,
         classId: dataFromForm.classId,
@@ -885,7 +872,7 @@ export const updateLesson = async ({
       THURSDAY = "THURSDAY",
       FRIDAY = "FRIDAY",
     }
-    let lessonStart = new Date(dataFromForm.date);
+    let lessonStart = new Date(dataFromForm.startDate);
     // Mapping JavaScript's getDay() output (0-6) to Weekday enum
     const dayMap: { [key: number]: Weekday } = {
       1: Weekday.MONDAY,
@@ -897,19 +884,6 @@ export const updateLesson = async ({
 
     const dayOfWeek = lessonStart.getDay(); // Returns a number (0 = Sunday, 1 = Monday, etc.)
     const weekday = dayMap[dayOfWeek] || null; // Get corresponding enum value
-    let lessonEnd = new Date(dataFromForm.date);
-    lessonStart.setHours(
-      Number(dataFromForm.startHour),
-      Number(dataFromForm.startMin),
-      0,
-      0
-    );
-    lessonEnd.setHours(
-      Number(dataFromForm.endHour),
-      Number(dataFromForm.startMin),
-      0,
-      0
-    );
 
     await prisma.lesson.update({
       where: {
@@ -918,8 +892,8 @@ export const updateLesson = async ({
       data: {
         name: dataFromForm.name,
         day: weekday,
-        startTime: lessonStart,
-        endTime: lessonEnd,
+        startTime: dataFromForm.startDate,
+        endTime: dataFromForm.endDate,
         teacherId: dataFromForm.teacherId,
         subjectId: dataFromForm.subjectId,
         classId: dataFromForm.classId,

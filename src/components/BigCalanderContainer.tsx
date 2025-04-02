@@ -23,8 +23,8 @@ const BigCalanderContainer = async({type, id}:{type: "teacherId" | "classId", id
     const data = dataRes.map((lesson) => {
         return {
             title: lesson.name,
-            start: lesson.startTime,
-            end: lesson.endTime,
+            start: new Date(lesson.startTime),
+            end: new Date(lesson.endTime),
         }
     })
 

@@ -84,7 +84,7 @@ const StudentList = async ({
         </div>
       </td>
       <td className="hidden md:table-cell mt-4">{item.username}</td>
-      <td className="hidden md:table-cell mt-4">{item.class.name[0]}</td>
+      <td className="hidden md:table-cell mt-4">{item.grade.level}</td>
       <td className="hidden lg:table-cell mt-4">{item?.phone}</td>
       <td className="hidden lg:table-cell mt-4">{item.address}</td>
       <td className="flex items-center gap-2 mt-4">
@@ -132,6 +132,7 @@ const StudentList = async ({
       where: query,
       include: {
         class: true,
+        grade: true,
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),

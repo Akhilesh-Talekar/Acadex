@@ -17,7 +17,7 @@ const announcementSchema = z.object({
   description: z
     .string()
     .min(1, { message: "Class is required!" })
-    .max(50, { message: "Class cannot exceed 20 characters!" }),
+    .max(200, { message: "Class cannot exceed 20 characters!" }),
 
   date: z.coerce.date(),
 

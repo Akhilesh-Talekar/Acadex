@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'; // Force dynamic rendering for all pages in the app directory
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
